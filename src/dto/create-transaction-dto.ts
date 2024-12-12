@@ -1,5 +1,7 @@
 import { IsArray, IsNotEmpty, IsObject, ArrayMaxSize, ArrayNotEmpty, IsString, IsNumber } from 'class-validator';
 
+export type TransactionStatus = 'PENDING' | 'COMPLETED' | 'FAILED';
+
 export class CreateTransactionDto {
   @IsArray()
   @ArrayNotEmpty({ message: 'Transactions array cannot be empty' })
@@ -28,4 +30,7 @@ export class Transaction {
   @IsString()
   @IsNotEmpty()
   recipientId: string;
+
+  @IsNotEmpty()
+  status: TransactionStatus;
 }
