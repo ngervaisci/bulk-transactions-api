@@ -33,4 +33,8 @@ export class Transaction {
 
   @IsNotEmpty()
   status: TransactionStatus;
+
+  @IsNumber()
+  @IsNotEmpty()
+  createdAt: number;
 }

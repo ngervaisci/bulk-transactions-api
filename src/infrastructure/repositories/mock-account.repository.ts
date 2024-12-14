@@ -7,6 +7,19 @@ export class MockAccountRepository implements IAccountRepository {
   private accounts: Map<string, Account> = new Map();
   private transactionSnapshot: Map<string, Account> | null = null;
 
+  constructor() {
+    this.initializeDummyAccounts();
+  }
+
+  private initializeDummyAccounts() {
+    const dummyAccounts: Account[] = [
+      new Account('1', 1000),
+      new Account('2', 2000),
+      new Account('3', 3000),
+    ];
+    dummyAccounts.forEach(account => this.accounts.set(account.id, account));
+  }
+
   async findById(id: string): Promise<Account | null> {
     const account = this.accounts.get(id);
     if (!account) return null;
@@ -18,17 +31,19 @@ export class MockAccountRepository implements IAccountRepository {
   }
 
   async beginTransaction(): Promise<void> {
+    // NOTE: Creates a deep copy of the account state 
     this.transactionSnapshot = new Map(
       Array.from(this.accounts.entries()).map(([id, account]) => [id, new Account(account.id, account.balance)])
     );
   }
 
   async commitTransaction(): Promise<void> {
-    this.transactionSnapshot = null; 
+    this.transactionSnapshot = null;
   }
 
   async rollbackTransaction(): Promise<void> {
     if (this.transactionSnapshot) {
+      // NOTE: Restore the accounts to their original state
       this.accounts = new Map(
         Array.from(this.transactionSnapshot.entries()).map(([id, account]) => [id, new Account(account.id, account.balance)])
       );
