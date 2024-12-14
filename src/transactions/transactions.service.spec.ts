@@ -25,122 +25,112 @@ describe('TransactionsService', () => {
   });
 
   describe('processTransactions', () => {
-    it('should successfully process a valid transaction', async () => {
+    it('should successfully process a valid transaction and return success result', async () => {
       const senderId = 'sender1';
       const recipientId = 'recipient1';
       await service.createAccount(senderId, 1000);
-      await service.createAccount(recipientId, 500);
+      await service.createAccount(recipientId, 0);
 
       const transaction: Transaction = {
-        id: 'tx1',
-        amount: 500,
+        id: '1',
+        amount: 200,
         senderId,
         recipientId,
-        status: 'PENDING'
+        status: 'PENDING',
+        createdAt: Date.now(),
       };
 
-      await service.processTransactions([transaction]);
+      const result = await service.processTransactions([transaction]);
 
-      expect(await service.getBalance(senderId)).toBe(500);
-      expect(await service.getBalance(recipientId)).toBe(1000);
+      expect(result.successful).toBe(1);
+      expect(result.failed).toHaveLength(0);
+
+      expect(await service.getBalance(senderId)).toBe(800);
+      expect(await service.getBalance(recipientId)).toBe(200);
     });
 
-    it('should process multiple transactions in order', async () => {
+    it('should rollback all transactions when one has insufficient funds', async () => {
       const sender1 = 'sender1';
       const sender2 = 'sender2';
       const recipient = 'recipient1';
       
       await service.createAccount(sender1, 1000);
-      await service.createAccount(sender2, 500);
+      await service.createAccount(sender2, 50);  
       await service.createAccount(recipient, 0);
 
       const transactions: Transaction[] = [
         {
           id: '1',
-          amount: 300,
+          amount: 200,
           senderId: sender1,
           recipientId: recipient,
-          status: 'PENDING'
+          status: 'PENDING',
+          createdAt: Date.now(),
         },
         {
           id: '2',
-          amount: 200,
+          amount: 100,  
           senderId: sender2,
           recipientId: recipient,
-          status: 'PENDING'
-        },
+          status: 'PENDING',
+          createdAt: Date.now(),
+        }
       ];
 
-      await service.processTransactions(transactions);
+      const result = await service.processTransactions(transactions);
 
-      expect(await service.getBalance(sender1)).toBe(700);
-      expect(await service.getBalance(sender2)).toBe(300);
-      expect(await service.getBalance(recipient)).toBe(500);
+      expect(result.successful).toBe(0);
+      expect(result.failed).toHaveLength(1);
+      expect(result.failed[0]).toEqual({
+        success: false,
+        transactionId: '2',
+        error: 'Insufficient funds in account sender2'
+      });
+
+      expect(await service.getBalance(sender1)).toBe(1000);
+      expect(await service.getBalance(sender2)).toBe(50);
+      expect(await service.getBalance(recipient)).toBe(0);
     });
 
-    it('should throw error for non-existent sender account', async () => {
-      const recipientId = 'recipient1';
-      await service.createAccount(recipientId, 0);
+    it('should rollback all transactions when one account does not exist', async () => {
+      const sender1 = 'sender1';
+      const nonexistentSender = 'nonexistent';
+      const recipient = 'recipient1';
+      
+      await service.createAccount(sender1, 1000);
+      await service.createAccount(recipient, 0);
 
-      const transaction: Transaction = {
-        id: '1',
-        amount: 100,
-        senderId: 'nonexistent',
-        recipientId,
-        status: 'PENDING'
-      };
+      const transactions: Transaction[] = [
+        {
+          id: '1',
+          amount: 200,
+          senderId: sender1,
+          recipientId: recipient,
+          status: 'PENDING',
+          createdAt: Date.now(),
+        },
+        {
+          id: '2',
+          amount: 100,
+          senderId: nonexistentSender,
+          recipientId: recipient,
+          status: 'PENDING',
+          createdAt: Date.now(),
+        }
+      ];
 
-      await expect(service.processTransactions([transaction]))
-        .rejects
-        .toThrow(BadRequestException);
-    });
+      const result = await service.processTransactions(transactions);
 
-    it('should throw error for insufficient funds', async () => {
-      const senderId = 'sender1';
-      const recipientId = 'recipient1';
-      await service.createAccount(senderId, 50);
-      await service.createAccount(recipientId, 0);
+      expect(result.successful).toBe(0);
+      expect(result.failed).toHaveLength(1);
+      expect(result.failed[0]).toEqual({
+        success: false,
+        transactionId: '2',
+        error: 'One or more accounts do not exist'
+      });
 
-      const transaction: Transaction = {
-        id: '1',
-        amount: 100,
-        senderId,
-        recipientId,
-        status: 'PENDING'
-      };
-
-      await expect(service.processTransactions([transaction]))
-        .rejects
-        .toThrow(BadRequestException);
-    });
-
-    it('should throw an error if sender has insufficient funds', async () => {
-      const senderId = 'sender1';
-      const recipientId = 'recipient1';
-      await service.createAccount(senderId, 100);
-      await service.createAccount(recipientId, 500);
-
-      const transaction: Transaction = {
-        id: '2',
-        amount: 200,
-        senderId,
-        recipientId,
-        status: 'PENDING'
-      };
-
-      await expect(service.processTransactions([transaction])).rejects.toThrow(BadRequestException);
-    });
-
-    it('should throw an error if sender or recipient does not exist', async () => {
-      const transaction: Transaction = {
-        id: '3',
-        amount: 100,
-        senderId: 'nonexistentSender',
-        recipientId: 'recipient1',
-        status: 'PENDING'
-      };
-
-      await expect(service.processTransactions([transaction])).rejects.toThrow(BadRequestException);
+      expect(await service.getBalance(sender1)).toBe(1000);
+      expect(await service.getBalance(recipient)).toBe(0);
     });
   });
 });

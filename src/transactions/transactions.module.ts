@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { TransactionsController } from './transactions.controller';
 import { TransactionsService } from './transactions.service';
 import { MockAccountRepository } from '../infrastructure/repositories/mock-account.repository';
-import { IAccountRepository } from '../domain/repositories/account.repository.interface';
+import { AccountsModule } from './accounts.module';
 
 @Module({
   controllers: [TransactionsController],
@@ -12,6 +12,9 @@ import { IAccountRepository } from '../domain/repositories/account.repository.in
       provide: 'IAccountRepository',
       useClass: MockAccountRepository,
     },
+  ],
+  imports: [
+    AccountsModule,
   ],
 })
 export class TransactionsModule {}
