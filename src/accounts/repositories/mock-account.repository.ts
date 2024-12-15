@@ -68,4 +68,8 @@ export class MockAccountRepository implements IAccountRepository {
     await this.save(account);
     return account;
   }
+
+  async findAll(): Promise<Account[]> {
+    return Array.from(this.accounts.values()).map(account => new Account(account.id, account.balance));
+  }
 }
