@@ -5,11 +5,13 @@ import { CreateTransactionDto, Transaction } from '../dto/create-transaction-dto
 import { BadRequestException } from '@nestjs/common';
 import { MockAccountRepository } from '../accounts/repositories/mock-account.repository';
 import { AccountService } from '../accounts/account.service';
+import { ConfigService } from '@nestjs/config'; // Add this line
 
 describe('TransactionsController', () => {
   let controller: TransactionsController;
   let service: TransactionsService;
   let accountService: AccountService;
+  let accountRepository: MockAccountRepository;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -17,6 +19,7 @@ describe('TransactionsController', () => {
       providers: [
         TransactionsService,
         AccountService,
+        ConfigService, // Add this line
         {
           provide: 'IAccountRepository',
           useClass: MockAccountRepository,
@@ -27,6 +30,10 @@ describe('TransactionsController', () => {
     controller = module.get<TransactionsController>(TransactionsController);
     service = module.get<TransactionsService>(TransactionsService);
     accountService = module.get<AccountService>(AccountService);
+    accountRepository = module.get<MockAccountRepository>('IAccountRepository');
+
+    // Reset the mock repository before each test
+    accountRepository.reset();
   });
 
   describe('create', () => {
