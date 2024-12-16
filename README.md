@@ -26,6 +26,40 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Project Overview
+
+This project is a Bulk Transactions API designed to handle the processing of multiple transactions efficiently. It provides endpoints for creating, validating, and managing transactions in a robust manner. The API is built with TypeScript and follows best practices for code organization and error handling.
+
+### Key Features
+- **Create Transactions**: Allows users to submit bulk transactions for processing.
+- **Validation**: Implements thorough validation checks to ensure data integrity and correctness before processing.
+- **Error Handling**: Provides comprehensive error responses to help users diagnose issues with their transactions.
+
+### Technologies Used
+- TypeScript
+- Node.js
+- Express
+
+### Getting Started
+To get a local copy up and running, follow these steps: 
+1. Clone the repository.
+2. Install the necessary dependencies.
+3. Start the server.
+
+For more detailed instructions, please refer to the installation section below.
+
+## Environment Variables
+
+To configure the application, you will need to set up your environment variables. A sample configuration file named `.env.example` is provided in the root of the project. 
+
+1. Copy the `.env.example` file to create your own `.env` file:
+   ```bash
+   cp .env.example .env
+   ```
+2. Update the `.env` file with your specific configurations, such as database connection strings, API keys, and other necessary settings.
+
+This setup ensures that sensitive information is not hardcoded into the source code, promoting better security practices.
+
 ## Project setup
 
 ```bash
@@ -41,21 +75,12 @@ $ pnpm run start
 # watch mode
 $ pnpm run start:dev
 
-# production mode
-$ pnpm run start:prod
-```
 
 ## Run tests
 
 ```bash
 # unit tests
 $ pnpm run test
-
-# e2e tests
-$ pnpm run test:e2e
-
-# test coverage
-$ pnpm run test:cov
 ```
 
 ## Deployment
