@@ -2,7 +2,7 @@ import { Injectable, BadRequestException, Inject } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Transaction } from '../dto/create-transaction-dto';
 import { Account } from '../domain/entities/account.entity';
-import { TransactionResult, BatchProcessResult, ValidationResult, ValidationError } from './types';
+import { BatchProcessResult, ValidationResult, ValidationError } from '../transactions/types';
 import { AccountService } from '../accounts/account.service';
 import { BatchValidationError } from '../errors/batch-validation.error';
 

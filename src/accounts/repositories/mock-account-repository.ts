@@ -1,3 +1,6 @@
+// This file is a mock implementation of the account repository.
+// It is used for testing purposes only.
+
 import { Injectable } from '@nestjs/common';
 import { Account } from '../../domain/entities/account.entity';
 import { IAccountRepository } from '../../domain/repositories/account.repository.interface';

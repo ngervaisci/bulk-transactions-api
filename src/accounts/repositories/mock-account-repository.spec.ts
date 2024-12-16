@@ -1,4 +1,4 @@
-import { MockAccountRepository } from './mock-account.repository';
+import { MockAccountRepository } from './mock-account-repository';
 
 describe('MockAccountRepository', () => {
   let repository: MockAccountRepository;

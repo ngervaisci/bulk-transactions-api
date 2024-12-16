@@ -3,7 +3,7 @@ import { TransactionsController } from './transactions.controller';
 import { TransactionsService } from './transactions.service';
 import { CreateTransactionDto, Transaction } from '../dto/create-transaction-dto';
 import { BadRequestException } from '@nestjs/common';
-import { MockAccountRepository } from '../accounts/repositories/mock-account.repository';
+import { MockAccountRepository } from '../accounts/repositories/mock-account-repository';
 import { AccountService } from '../accounts/account.service';
 import { ConfigService } from '@nestjs/config'; // Add this line
 

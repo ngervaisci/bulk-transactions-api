@@ -1,3 +1,5 @@
+// This file contains type definitions used across the transactions module.
+
 export interface TransactionResult {
   success: boolean;
   transactionId: string;
