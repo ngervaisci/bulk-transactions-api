@@ -19,7 +19,7 @@ describe('TransactionsController', () => {
       providers: [
         TransactionsService,
         AccountService,
-        ConfigService, // Add this line
+        ConfigService,
         {
           provide: 'IAccountRepository',
           useClass: MockAccountRepository,
